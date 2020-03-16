@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>疫情地图</title>
+   
+</head>
+<body>
+    <div id="main" style="width: 600px;height:400px;border:1px solid rebeccapurple ;margin: 100px auto;"></div>
+
+    <script src="js/echarts.min.js"></script>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        // 指定图表的配置项和数据
+        var option = {
+            title:{
+                text:"疫情地图",
+                subtext:"@umr.js",
+                left:"center",
+                padding:15
+            },
+            xAxis:{
+                data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+            },
+            yAxis:{
+                // data:['100','300','500']
+                splitNumber:3
+            },
+            legend:{
+                right:0,
+                top:10
+            },
+            tooltip:{
+                
+            },
+            series:[
+                {
+                    name:'收入',
+                    type:'line',
+                    data:[111,454,862,464,989,333,777]
+                },
+                {
+                    name:'支出',
+                    type:'line',
+                    data:[151,400,462,764,89,333,557]
+                }
+            ]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
+</body>
+</html>

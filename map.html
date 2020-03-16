@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>疫情地图</title>
+   
+</head>
+<body>
+    <div id="main" style="width: 900px;height:600px;margin: 100px auto;"></div>
+    <div id="zhejiang" style="width: 900px;height:600px;margin: 100px auto;"></div>
+
+    <script src="js/echarts.min.js"></script>
+    <script src="./map/china.js"></script>
+    <script src="./map/zhejiang.js"></script>
+    <script type="text/javascript">
+    
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        // 指定图表的配置项和数据
+        fetch('./data.json')
+        .then(res=>res.json())
+        .then(data=>{
+            console.log(data)
+            let arr = data.map(r=>{
+               return{
+                name:r.provinceShortName,
+                value:[r.currentConfirmedCount,
+                r.curedCount,r.confirmedCount,
+                r.deadCount,r.suspectedCount]
+               }
+            })
+            var option = {
+            visualMap:{
+                dimension:0,
+                pieces: [
+                {gt: 4000,color:'#e74c3c'},            // (1500, Infinity]
+                {gt: 2000, lte: 4000,color:'#ff7979'},
+                {gt: 500, lte: 2000,color:'#d35400'},  // (900, 1500]
+                {gt: 100, lte: 500,color:'#f0932b'},   // (200, 300]
+                {gt: 10, lte: 100,color:'#f6e58d'},       // (10, 200]
+                {lt: 10,color:'#1abc9c'},
+                {lte:0,color:'#fff'}                // (-Infinity, 5)
+            ]
+            },
+            title:{
+                text:"疫情地图",
+                subtext:"@umr.js",
+                left:"center",
+                padding:15
+            },
+            tooltip:{    
+                formatter(val){
+                    let {data,marker} = val
+                    // console.log(marker)
+                    let confirm =`<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#f6e58d;"></span>`
+                    let suspect = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#f1c40f;"></span>`
+                    let died = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#eb4d4b;"></span>`
+                    let cured = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#27ae60;"></span>` 
+                    return `
+                        ${data.name}<br>
+                    ${confirm}当前确诊：${data.value[0]}<br>
+                    ${suspect}当前疑似：${data.value[4]}<br>
+                    ${died}死亡数：${data.value[3]}<br>
+                    ${confirm}累计确诊：${data.value[2]}<br>
+                    ${cured}累计治愈：${data.value[1]}<br>
+                    `
+                }            
+            },
+            series:[
+                {
+                    type:'map',
+                    name:'疫情地图',
+                    map:"china",
+                    data:arr
+                }
+            ]
+            };
+            myChart.setOption(option);
+        })
+
+        var zhejiangChart = echarts.init(document.getElementById('zhejiang'));
+        // 指定图表的配置项和数据
+        fetch('./data.json')
+        .then(res=>res.json())
+        .then(data=>{
+            // console.log(data.find(r=>r.provinceShortName==='浙江'))
+            let zjData=data.find(r=>r.provinceShortName==='浙江')
+            let {cities} = zjData
+            // console.log(cities)
+            let arr = cities.map(r=>{
+               return{
+                name:r.cityName+'市',
+                value:[r.currentConfirmedCount,
+                r.curedCount,r.confirmedCount,
+                r.deadCount,r.suspectedCount]
+               }
+            })
+            var zoption = {
+            visualMap:{
+                dimension:0,
+                pieces: [
+               // (200, 300]
+                {gt: 5, lte: 20,color:'#f6e58d'},       // (10, 200]
+                {lt: 5,color:'#1abc9c'},
+                {lte:0,color:'#fff'}                // (-Infinity, 5)
+            ]
+            },
+            title:{
+                text:"浙江疫情地图",
+                subtext:"@umr.js",
+                left:"center",
+                padding:15
+            },
+            tooltip:{    
+                formatter(val){
+                    let {data,marker} = val
+                    // console.log(marker)
+                    let confirm =`<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#f6e58d;"></span>`
+                    let suspect = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#f1c40f;"></span>`
+                    let died = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#eb4d4b;"></span>`
+                    let cured = `<span style="display:inline-block;margin-right:5px;border-radius:10px;width:10px;height:10px;background-color:#27ae60;"></span>` 
+                    return `
+                        ${data.name}<br>
+                    ${confirm}当前确诊：${data.value[0]}<br>
+                    ${suspect}当前疑似：${data.value[4]}<br>
+                    ${died}死亡数：${data.value[3]}<br>
+                    ${confirm}累计确诊：${data.value[2]}<br>
+                    ${cured}累计治愈：${data.value[1]}<br>
+                    `
+                }            
+            },
+            series:[
+                {
+                    type:'map',
+                    name:'疫情地图',
+                    map:"浙江",
+                    data:arr
+                }
+            ]
+            };
+            zhejiangChart.setOption(zoption);
+        })
+        
+
+        // 使用刚指定的配置项和数据显示图表。
+       
+    </script>
+</body>
+</html>
